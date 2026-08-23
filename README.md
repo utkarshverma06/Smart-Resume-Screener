@@ -1,7 +1,6 @@
 # Smart-Resume-Screener
+Deployed Link: https://utkarshverma06.github.io/Smart-Resume-Screener/templates/index.html
 
-One Python file (`app.py`), one HTML page (`templates/index.html`). No database
-setup, no build step.
 
 ## What it does
 1. Paste or upload a job description.
