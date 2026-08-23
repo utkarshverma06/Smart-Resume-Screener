@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Smart Resume Screener</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: #f6f4ef;
+    --ink: #1b2430;
+    --ink-dim: #6b7280;
+    --line: #d9d5c9;
+    --accent: #0f766e;
+    --good: #0f766e;
+    --mid: #b45309;
+    --low: #b91c1c;
+    --font-display: 'Big Shoulders Display', sans-serif;
+    --font-body: 'Inter', sans-serif;
+    --font-mono: 'IBM Plex Mono', monospace;
+  }
+  * { box-sizing: border-box; }
+  body {
+    font-family: var(--font-body);
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 48px 24px 80px;
+    background: var(--paper);
+    color: var(--ink);
+  }
+  .eyebrow {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+  h1 {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 42px;
+    letter-spacing: -0.01em;
+    margin: 4px 0 6px;
+  }
+  .subhead { color: var(--ink-dim); font-size: 14px; margin-bottom: 32px; }
+  .field { margin-bottom: 20px; }
+  .tabs { display: flex; gap: 4px; margin-bottom: 8px; }
+  .tab-btn {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    padding: 7px 12px;
+    background: transparent;
+    border: 1.5px solid var(--line);
+    border-radius: 4px;
+    color: var(--ink-dim);
+    cursor: pointer;
+  }
+  .tab-btn.active {
+    background: var(--ink);
+    color: var(--paper);
+    border-color: var(--ink);
+  }
+  label {
+    display: block;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ink-dim);
+    margin-bottom: 6px;
+  }
+  textarea, input[type=file] {
+    width: 100%;
+    padding: 12px 14px;
+    box-sizing: border-box;
+    background: #fffdf9;
+    border: 1.5px solid var(--line);
+    border-radius: 4px;
+    font-family: var(--font-body);
+    font-size: 14px;
+    color: var(--ink);
+  }
+  textarea { height: 110px; resize: vertical; }
+  textarea:focus, input:focus, button:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 1px;
+    border-color: var(--accent);
+  }
+  input[type=file] { padding: 10px 14px; cursor: pointer; }
+  .actions { display: flex; gap: 10px; margin-top: 4px; }
+  button {
+    font-family: var(--font-body);
+    font-weight: 600;
+    font-size: 14px;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: opacity 0.15s ease;
+  }
+  button:hover { opacity: 0.85; }
+  button:disabled { opacity: 0.5; cursor: not-allowed; }
+  #scoreBtn { background: var(--ink); color: var(--paper); flex: 1; }
+  #resetBtn { background: transparent; color: var(--ink-dim); border: 1.5px solid var(--line); }
+  #error {
+    color: var(--low);
+    margin-top: 14px;
+    font-family: var(--font-mono);
+    font-size: 13px;
+    white-space: pre-wrap;
+  }
+  .shortlist-controls {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-top: 32px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--line);
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--ink-dim);
+  }
+  .shortlist-controls label { display: inline; text-transform: none; letter-spacing: normal; margin: 0; font-size: 12px; }
+  #threshold {
+    width: 48px;
+    padding: 4px 6px;
+    border: 1.5px solid var(--line);
+    border-radius: 4px;
+    background: #fffdf9;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--ink);
+  }
+  .toggle-label { display: flex; align-items: center; gap: 6px; cursor: pointer; }
+  .toggle-label input { cursor: pointer; }
+  #results { margin-top: 36px; }
+  .results-heading {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-dim);
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 8px;
+    margin-bottom: 4px;
+  }
+  .candidate {
+    border-bottom: 1px solid var(--line);
+    padding: 20px 0;
+  }
+  .candidate-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 12px;
+  }
+  .filename {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 19px;
+  }
+  .badge {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    background: var(--good);
+    color: var(--paper);
+    padding: 2px 8px;
+    border-radius: 100px;
+    vertical-align: middle;
+    margin-left: 6px;
+  }
+  .score-num {
+    font-family: var(--font-mono);
+    font-weight: 600;
+    font-size: 20px;
+    white-space: nowrap;
+  }
+  .meta { color: var(--ink-dim); font-size: 12.5px; margin-top: 2px; }
+  /* Signature element: a scan-line fit gauge, evoking the resume being "swept" for score */
+  .gauge {
+    position: relative;
+    height: 4px;
+    background: var(--line);
+    border-radius: 2px;
+    margin: 14px 0 12px;
+    overflow: hidden;
+  }
+  .gauge-fill {
+    position: absolute;
+    inset: 0;
+    width: 0;
+    border-radius: 2px;
+    animation: sweep 0.6s ease forwards;
+  }
+  @keyframes sweep {
+    from { width: 0; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .gauge-fill { animation: none; }
+  }
+  .justification { font-size: 14px; line-height: 1.55; margin: 10px 0; }
+  .tags { display: flex; flex-wrap: wrap; gap: 6px; }
+  .tag {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    padding: 3px 9px;
+    border-radius: 100px;
+    border: 1px solid var(--line);
+    color: var(--ink);
+  }
+  .tag.missing { color: var(--low); border-color: var(--low); opacity: 0.75; }
+  .empty-state {
+    color: var(--ink-dim);
+    font-size: 13px;
+    padding: 24px 0;
+    font-family: var(--font-mono);
+  }
+</style>
+</head>
+<body>
+<div class="eyebrow">Fit scoring, plain and honest</div>
+<h1>Smart Resume Screener</h1>
+<div class="subhead">Paste a job description, drop in a resume, get a ranked fit score with reasons.</div>
+<div class="field">
+  <label>Job description</label>
+  <div class="tabs">
+    <button type="button" class="tab-btn active" id="tabPasteBtn" onclick="switchTab('paste')">Paste text</button>
+    <button type="button" class="tab-btn" id="tabUploadBtn" onclick="switchTab('upload')">Upload file</button>
+  </div>
+  <textarea id="jd" placeholder="Paste the job description here..."></textarea>
+  <input type="file" id="jdFile" accept=".pdf,.txt" style="display:none;">
+</div>
+<div class="field">
+  <label for="resume">Resume file (.pdf or .txt)</label>
+  <input type="file" id="resume" accept=".pdf,.txt">
+</div>
+<div class="actions">
+  <button id="scoreBtn" onclick="scoreResume()">Score resume</button>
+  <button id="resetBtn" onclick="resetAll()">Reset all</button>
+</div>
+<div id="error"></div>
+<div class="shortlist-controls" id="shortlistControls" style="display:none;">
+  <label for="threshold" style="display:inline;">Shortlist threshold — score ≥</label>
+  <input type="number" id="threshold" min="1" max="10" value="7" oninput="onThresholdChange()">
+  <label class="toggle-label">
+    <input type="checkbox" id="shortlistOnly" checked onchange="onThresholdChange()">
+    Show shortlisted only
+  </label>
+</div>
+<div id="results"></div>
+<script>
+let jdMode = 'paste';
+function switchTab(mode) {
+  jdMode = mode;
+  document.getElementById('tabPasteBtn').classList.toggle('active', mode === 'paste');
+  document.getElementById('tabUploadBtn').classList.toggle('active', mode === 'upload');
+  document.getElementById('jd').style.display = mode === 'paste' ? 'block' : 'none';
+  document.getElementById('jdFile').style.display = mode === 'upload' ? 'block' : 'none';
+  document.getElementById('error').textContent = '';
+}
+async function scoreResume() {
+  const jdText = document.getElementById('jd').value.trim();
+  const jdFileInput = document.getElementById('jdFile');
+  const resumeInput = document.getElementById('resume');
+  const errorDiv = document.getElementById('error');
+  const btn = document.getElementById('scoreBtn');
+  errorDiv.textContent = '';
+  const usingJdFile = jdMode === 'upload';
+  if (usingJdFile && !jdFileInput.files.length) {
+    errorDiv.textContent = 'Please choose a job description file.'; return;
+  }
+  if (!usingJdFile && !jdText) {
+    errorDiv.textContent = 'Please paste a job description.'; return;
+  }
+  if (!resumeInput.files.length) { errorDiv.textContent = 'Please choose a resume file.'; return; }
+  const formData = new FormData();
+  if (usingJdFile) {
+    formData.append('job_description_file', jdFileInput.files[0]);
+  } else {
+    formData.append('job_description', jdText);
+  }
+  formData.append('resume', resumeInput.files[0]);
+  btn.disabled = true;
+  btn.textContent = 'Scoring...';
+  try {
+    const res = await fetch('/api/score', { method: 'POST', body: formData });
+    const data = await res.json();
+    if (!res.ok) {
+      errorDiv.textContent = 'Error: ' + (data.error || res.statusText);
+      return;
+    }
+    renderCandidates(data.all_candidates);
+  } catch (err) {
+    errorDiv.textContent = 'Network/JS error: ' + err.message;
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Score resume';
+  }
+}
+async function resetAll() {
+  await fetch('/api/reset', { method: 'POST' });
+  document.getElementById('results').innerHTML = '';
+  document.getElementById('error').textContent = '';
+}
+let allCandidates = [];
+function scoreColor(score) {
+  if (score >= 7) return 'var(--good)';
+  if (score >= 4) return 'var(--mid)';
+  return 'var(--low)';
+}
+function onThresholdChange() {
+  renderCandidates(allCandidates);
+}
+function renderCandidates(candidates) {
+  allCandidates = candidates;
+  const container = document.getElementById('results');
+  const controls = document.getElementById('shortlistControls');
+  if (!candidates.length) {
+    container.innerHTML = '';
+    controls.style.display = 'none';
+    return;
+  }
+  controls.style.display = 'flex';
+  const threshold = parseInt(document.getElementById('threshold').value, 10) || 0;
+  const onlyShortlisted = document.getElementById('shortlistOnly').checked;
+  const visible = onlyShortlisted ? candidates.filter(c => c.score >= threshold) : candidates;
+  if (!visible.length) {
+    container.innerHTML = `<div class="empty-state">No candidates meet the score ≥ ${threshold} threshold yet.</div>`;
+    return;
+  }
+  const rows = visible.map(c => {
+    const color = scoreColor(c.score);
+    const shortlisted = c.score >= threshold;
+    return `
+    <div class="candidate">
+      <div class="candidate-top">
+        <div class="filename">${c.filename} ${shortlisted ? '<span class="badge">Shortlisted</span>' : ''}</div>
+        <div class="score-num" style="color:${color};">${c.score}/10</div>
+      </div>
+      <div class="meta">${c.experience_years} yrs experience</div>
+      <div class="gauge"><div class="gauge-fill" style="background:${color}; width:${c.score * 10}%;"></div></div>
+      <div class="justification">${c.justification}</div>
+      <div class="tags">
+        ${c.matched_skills.map(s => `<span class="tag">${s}</span>`).join('')}
+        ${c.missing_skills.map(s => `<span class="tag missing">missing: ${s}</span>`).join('')}
+      </div>
+    </div>`;
+  }).join('');
+  const heading = onlyShortlisted
+    ? `Shortlisted — ${visible.length} of ${candidates.length} candidates (score ≥ ${threshold})`
+    : `All scored — ${candidates.length} candidates`;
+  container.innerHTML = `<div class="results-heading">${heading}</div>${rows}`;
+}
+// Load any previously scored candidates on page load
+fetch('/api/candidates').then(r => r.json()).then(renderCandidates);
+</script>
+</body>
+</html>

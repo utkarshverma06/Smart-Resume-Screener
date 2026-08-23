@@ -1,0 +1,49 @@
+[
+  {
+    "filename": "Utkarsh_Verma_Resume.pdf",
+    "skills": [
+      "css",
+      "git",
+      "go",
+      "html",
+      "java",
+      "javascript",
+      "machine learning",
+      "mongodb",
+      "pandas",
+      "python",
+      "sql"
+    ],
+    "experience_years": 0,
+    "score": 10,
+    "justification": "Matched 2 of 2 skills mentioned in the job description.",
+    "matched_skills": [
+      "git",
+      "go"
+    ],
+    "missing_skills": [],
+    "method": "keyword_fallback"
+  },
+  {
+    "filename": "Utkarsh_Verma_Resume.pdf",
+    "skills": [
+      "css",
+      "git",
+      "go",
+      "html",
+      "java",
+      "javascript",
+      "machine learning",
+      "mongodb",
+      "pandas",
+      "python",
+      "sql"
+    ],
+    "experience_years": 0,
+    "score": 5,
+    "justification": "Matched 0 of 0 skills mentioned in the job description.",
+    "matched_skills": [],
+    "missing_skills": [],
+    "method": "keyword_fallback"
+  }
+]
