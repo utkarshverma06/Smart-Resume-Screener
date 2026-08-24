@@ -1,5 +1,5 @@
 # Smart-Resume-Screener
-Deployed Link: https://utkarshverma06.github.io/Smart-Resume-Screener/templates/index.html
+
 
 
 ## What it does
